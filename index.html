@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conejo-encuesta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chewy&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #7DD3FC;
+    --amarillo: #FDE68A;
+    --rosa: #FB7185;
+    --tinta: #23395b;
+    --fondo: #f5fbff;
+    --blanco: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Nunito, system-ui, sans-serif;
+    color: var(--tinta);
+    background: linear-gradient(160deg, var(--azul) 0%, var(--fondo) 45%, var(--amarillo) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+  .cabecera { display: flex; flex-direction: column; align-items: center; }
+  .ejemplo { width: 120px; height: 120px; margin-bottom: -6px; }
+  .ejemplo svg { width: 100%; height: 100%; }
+  h1 {
+    font-family: Chewy, cursive;
+    font-weight: 400;
+    font-size: clamp(48px, 11vw, 76px);
+    line-height: 1;
+    margin: 4px 0 6px;
+    color: var(--rosa);
+    text-shadow: 3px 3px 0 var(--blanco), 6px 6px 0 var(--azul);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .sub { margin: 0 0 22px; font-weight: 800; text-align: center; }
+  .card {
+    background: var(--blanco);
+    border-radius: 28px;
+    padding: 24px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 10px 0 rgba(35, 57, 91, .12);
+  }
+  .oculto { display: none !important; }
+
+  .btn {
+    font-family: Chewy, cursive;
+    font-size: 22px;
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 26px;
+    background: var(--rosa);
+    color: var(--blanco);
+    cursor: pointer;
+    box-shadow: 0 5px 0 #d9455f;
+  }
+  .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #d9455f; }
+  .btn.sec {
+    background: var(--azul);
+    color: var(--tinta);
+    box-shadow: 0 5px 0 #4fb3dd;
+  }
+  .btn.sec:active { box-shadow: 0 2px 0 #4fb3dd; }
+  .btn.peq { font-size: 17px; padding: 8px 16px; }
+  .acciones { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 18px; }
+
+  .progreso {
+    height: 14px;
+    background: #eef6fb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progreso div {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--azul), var(--amarillo), var(--rosa));
+    transition: width .3s;
+  }
+  .contador { font-weight: 800; font-size: 14px; color: #6b7d95; margin: 0 0 14px; }
+  .pregunta {
+    font-family: Chewy, cursive;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    margin: 0 0 18px;
+  }
+  .opciones { display: grid; gap: 10px; }
+  .opcion {
+    background: var(--fondo);
+    border: 3px solid var(--azul);
+    color: var(--tinta);
+    font-family: Nunito, sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    text-align: left;
+    border-radius: 18px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .opcion:hover, .opcion:focus-visible { background: var(--amarillo); border-color: var(--amarillo); outline: none; }
+
+  /* Marco tipo Tamagotchi */
+  .device {
+    width: 100%;
+    max-width: 300px;
+    background: linear-gradient(145deg, var(--rosa), #fb8fa0);
+    border-radius: 48px 48px 70px 70px;
+    padding: 26px 26px 34px;
+    box-shadow: 0 12px 0 #c94c64, inset 0 -6px 0 rgba(0, 0, 0, .08);
+    margin: 0 auto;
+  }
+  .pantalla {
+    background: #eaf9ff;
+    border: 8px solid var(--tinta);
+    border-radius: 24px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background-image: radial-gradient(circle, rgba(125, 211, 252, .45) 1.2px, transparent 1.4px);
+    background-size: 14px 14px;
+  }
+  .pantalla svg { width: 86%; height: 86%; }
+  .conejo { animation: salta 1.6s steps(2, end) infinite; }
+  @keyframes salta {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .botones { display: flex; justify-content: center; gap: 26px; margin-top: 20px; }
+  .boton-dev {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--amarillo); border: 4px solid #c9a94a;
+  }
+  .boton-dev.b { background: var(--azul); border-color: #4fb3dd; }
+
+  .descripcion { text-align: center; margin: 22px 0 6px; }
+  .descripcion h2 {
+    font-family: Chewy, cursive;
+    font-weight: 400;
+    font-size: 34px;
+    margin: 0 0 6px;
+    color: var(--rosa);
+  }
+  .descripcion p { margin: 0; font-weight: 700; line-height: 1.4; }
+  .estado { text-align: center; font-weight: 800; color: #2c8f5a; min-height: 22px; margin-top: 10px; }
+  .selectores { display: grid; gap: 12px; }
+  .selectores label { display: grid; gap: 6px; font-weight: 800; }
+  .selector {
+    font-family: Nunito, sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 3px solid var(--azul);
+    background: var(--fondo);
+    color: var(--tinta);
+  }
+  .compartir-titulo { text-align: center; font-weight: 800; margin: 18px 0 0; font-size: 15px; color: #6b7d95; }
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="ejemplo" id="ejemplo" aria-hidden="true"></div>
+  <h1>Conejo-encuesta</h1>
+</header>
+<p class="sub">Responde 10 preguntas y descubre qué conejo eres</p>
+
+<!-- Pantalla de inicio -->
+<section id="inicio" class="card">
+  <div class="acciones" style="margin-top:0">
+    <button class="btn" id="btn-empezar">Empezar</button>
+    <button class="btn sec oculto" id="btn-ver">Ver mi conejo guardado</button>
+    <button class="btn sec" id="btn-generar">Genera tu conejo</button>
+  </div>
+</section>
+
+<!-- Generador libre -->
+<section id="generador" class="card oculto">
+  <h2 class="pregunta">Genera tu conejo</h2>
+  <p class="contador">Elige lo que quieras; "Al azar" decide lo que dejes sin elegir.</p>
+  <div class="selectores" id="selectores"></div>
+  <div class="acciones">
+    <button class="btn" id="btn-crear">Crear conejo</button>
+    <button class="btn sec" id="btn-volver-gen">Volver</button>
+  </div>
+</section>
+
+<!-- Cuestionario -->
+<section id="cuestionario" class="card oculto">
+  <div class="progreso"><div id="barra"></div></div>
+  <p class="contador" id="contador"></p>
+  <h2 class="pregunta" id="pregunta"></h2>
+  <div class="opciones" id="opciones"></div>
+</section>
+
+<!-- Resultado -->
+<section id="resultado" class="oculto" style="width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center">
+  <div class="device">
+    <div class="pantalla" id="pantalla"></div>
+    <div class="botones">
+      <span class="boton-dev"></span>
+      <span class="boton-dev b"></span>
+    </div>
+  </div>
+  <div class="card" style="margin-top:24px">
+    <div class="descripcion">
+      <h2 id="nombre-conejo">Tu conejo</h2>
+      <p id="texto-conejo"></p>
+    </div>
+    <p class="estado" id="estado"></p>
+
+    <p class="compartir-titulo">Compartir</p>
+    <div class="acciones">
+      <button class="btn peq sec" id="btn-compartir">Compartir</button>
+      <button class="btn peq sec" id="btn-descargar">Descargar imagen</button>
+      <button class="btn peq sec" id="btn-whatsapp">WhatsApp</button>
+      <button class="btn peq sec" id="btn-copiar">Copiar texto</button>
+    </div>
+
+    <div class="acciones">
+      <button class="btn sec" id="btn-repetir">Hacer otra vez</button>
+      <button class="btn" id="btn-inicio">Inicio</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* ===================== CONFIGURACIÓN ===================== */
+
+  // Atributos del conejo y sus opciones
+  const ATRIBUTOS = {
+    orejas:    ['erguidas', 'caídas', 'cortas'],
+    accesorio: ['moño', 'lentes', 'alas'],
+    color:     ['blanco', 'beige', 'gris', 'azul', 'amarillo', 'rosa'],
+    tamaño:    ['pequeño', 'mediano', 'grande'],
+    pelo:      ['liso', 'rizado', 'esponjoso']
+  };
+
+  // Cada pregunta alimenta un atributo. Cada respuesta apunta a una opción de ese atributo.
+  // Cada atributo recibe 2 respuestas: si coinciden, ese es el resultado; si no, el azar elige entre ambas.
+  const PREGUNTAS = [
+    { texto: '¿Cómo llegas a una fiesta?', attr: 'orejas', opciones: [
+        { label: 'Saludas a todos', valor: 'erguidas' },
+        { label: 'Vas directo a la comida', valor: 'caídas' },
+        { label: 'Observas desde un rincón', valor: 'cortas' } ] },
+    { texto: 'Para viajar, ¿qué eliges?', attr: 'orejas', opciones: [
+        { label: 'Playa', valor: 'caídas' },
+        { label: 'Montaña', valor: 'erguidas' },
+        { label: 'Ciudad', valor: 'cortas' } ] },
+    { texto: 'Para un regalo, ¿qué prefieres?', attr: 'accesorio', opciones: [
+        { label: 'Algo práctico', valor: 'alas' },
+        { label: 'Algo bonito', valor: 'moño' },
+        { label: 'Algo divertido', valor: 'lentes' } ] },
+    { texto: '¿Cómo describirías tu ropa?', attr: 'accesorio', opciones: [
+        { label: 'Cómoda', valor: 'alas' },
+        { label: 'Llamativa', valor: 'moño' },
+        { label: 'Clásica', valor: 'lentes' } ] },
+    { texto: '¿Qué tipo de energía tienes?', attr: 'tamaño', opciones: [
+        { label: 'Muchas actividades', valor: 'grande' },
+        { label: 'Pocas, pero intensas', valor: 'mediano' },
+        { label: 'Ritmo tranquilo', valor: 'pequeño' } ] },
+    { texto: 'Un día lluvioso: ¿qué haces?', attr: 'tamaño', opciones: [
+        { label: 'Leo', valor: 'pequeño' },
+        { label: 'Cocino', valor: 'mediano' },
+        { label: 'Salgo de todos modos', valor: 'grande' } ] },
+    { texto: 'Ante un problema, ¿qué haces?', attr: 'pelo', opciones: [
+        { label: 'Lo resuelvo al momento', valor: 'liso' },
+        { label: 'Lo pienso mucho', valor: 'rizado' },
+        { label: 'Pido ayuda', valor: 'esponjoso' } ] },
+    { texto: 'Tu cuarto ideal es…', attr: 'pelo', opciones: [
+        { label: 'Lleno de cosas', valor: 'esponjoso' },
+        { label: 'Minimalista', valor: 'liso' },
+        { label: 'Con plantas', valor: 'rizado' } ] },
+    { texto: '¿De qué color es tu pelo?', attr: 'color', opciones: [
+        { label: 'Negro', valor: 'gris' },
+        { label: 'Castaño', valor: 'beige' },
+        { label: 'Rubio', valor: 'amarillo' } ] },
+    { texto: '¿De qué color son tus ojos?', attr: 'color', opciones: [
+        { label: 'Café', valor: 'rosa' },
+        { label: 'Verde', valor: 'azul' },
+        { label: 'Azul', valor: 'blanco' } ] }
+  ];
+
+  const HEX = {
+    blanco:   '#FFFFFF',
+    beige:    '#E8D5B5',
+    gris:     '#B8BCC4',
+    azul:     '#7DD3FC',
+    amarillo: '#FDE68A',
+    rosa:     '#FB7185'
+  };
+  const TINTA = '#23395b';
+  const ROSA_DETALLE = '#FB7185';
+  const ESCALA = { pequeño: 0.85, mediano: 1, grande: 1.12 };
+  const N = 24; // cuadrícula de píxeles
+  const CLAVE_GUARDADO = 'conejo-encuesta-v1';
+
+  // Ejemplo fijo para el encabezado
+  const CONEJO_EJEMPLO = { orejas: 'erguidas', accesorio: 'moño', color: 'amarillo', tamaño: 'mediano', pelo: 'rizado' };
+
+  /* ===================== ESTADO ===================== */
+
+  let indice = 0;
+  let respuestas = [];
+  let conejoActual = null;
+
+  /* ===================== LÓGICA ===================== */
+
+  function generarConejo(respuestas) {
+    const conejo = {};
+    for (const attr of Object.keys(ATRIBUTOS)) {
+      const valores = respuestas.filter(r => r.attr === attr).map(r => r.valor);
+      if (valores.length === 0) {
+        conejo[attr] = ATRIBUTOS[attr][Math.floor(Math.random() * ATRIBUTOS[attr].length)];
+      } else if (valores.every(v => v === valores[0])) {
+        conejo[attr] = valores[0];
+      } else {
+        conejo[attr] = valores[Math.floor(Math.random() * valores.length)];
+      }
+    }
+    return conejo;
+  }
+
+  /* ---------- Dibujo pixelado ---------- */
+
+  function crearCuadricula() {
+    return Array.from({ length: N }, () => Array(N).fill(null));
+  }
+
+  function setPx(g, x, y, c) {
+    x = Math.round(x); y = Math.round(y);
+    if (x >= 0 && y >= 0 && x < N && y < N) g[y][x] = c;
+  }
+
+  function elipse(g, cx, cy, rx, ry, c) {
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const dx = (x + 0.5 - cx) / rx;
+        const dy = (y + 0.5 - cy) / ry;
+        if (dx * dx + dy * dy <= 1) g[y][x] = c;
+      }
+    }
+  }
+
+  function oscurecer(hex, f) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.round(((n >> 16) & 255) * f);
+    const g = Math.round(((n >> 8) & 255) * f);
+    const b = Math.round((n & 255) * f);
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+
+  function pixelesConejo(c) {
+    const g = crearCuadricula();
+    const col = HEX[c.color];
+    const k = ESCALA[c.tamaño];
+    const bx = 12, by = 21;
+    // Convierte una coordenada base en coordenada escalada por tamaño
+    const pt = (x, y) => [bx + (x - bx) * k, by + (y - by) * k];
+    const E = (cx, cy, rx, ry, color) => {
+      const [X, Y] = pt(cx, cy);
+      elipse(g, X, Y, rx * k, ry * k, color);
+    };
+
+    // Cuerpo, cabeza y patas
+    E(12, 16, 6, 5, col);
+    E(12, 9, 4.8, 4.3, col);
+    E(9, 21, 1.6, 1.1, col);
+    E(15, 21, 1.6, 1.1, col);
+
+    // Alas: solo ocupan celdas vacías, a los lados del cuerpo
+    if (c.accesorio === 'alas') {
+      const ala = (cx, cy, rx, ry) => {
+        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+          const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
+          if (dx * dx + dy * dy <= 1 && g[y][x] === null) g[y][x] = '#FFFFFF';
+        }
+      };
+      const [aix, aiy] = pt(3, 14), [ader, adery] = pt(21, 14);
+      ala(aix, aiy, 3 * k, 3.2 * k);
+      ala(ader, adery, 3 * k, 3.2 * k);
+    }
+
+    // Orejas
+    const orejas = {
+      erguidas: [[9, 3, 1.5, 3.5], [15, 3, 1.5, 3.5]],
+      caídas:   [[6.5, 8, 1.6, 3], [17.5, 8, 1.6, 3]],
+      cortas:   [[9.5, 5, 1.4, 2], [14.5, 5, 1.4, 2]]
+    }[c.orejas];
+    orejas.forEach(([x, y, rx, ry]) => E(x, y, rx, ry, col));
+
+    // Pelo: esponjoso añade púas alrededor
+    if (c.pelo === 'esponjoso') {
+      const copia = g.map(r => r.slice());
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        if (g[y][x] === null && ((x * 5 + y * 3) % 3 === 0)) {
+          const vecino = [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => {
+            const nx = x + dx, ny = y + dy;
+            return nx >= 0 && ny >= 0 && nx < N && ny < N && g[ny][nx];
+          });
+          if (vecino) copia[y][x] = col;
+        }
+      }
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) g[y][x] = copia[y][x];
+    }
+
+    // Contorno negro alrededor de lo que ya está dibujado
+    const contorno = [];
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      if (g[y][x] === null && [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => {
+        const nx = x + dx, ny = y + dy;
+        return nx >= 0 && ny >= 0 && nx < N && ny < N && g[ny][nx];
+      })) contorno.push([x, y]);
+    }
+    contorno.forEach(([x, y]) => g[y][x] = TINTA);
+
+    // Pelo rizado: sombreado en puntos
+    if (c.pelo === 'rizado') {
+      const sombra = oscurecer(col, 0.82);
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        if (g[y][x] === col && (x + y) % 3 === 0 && y > 9) g[y][x] = sombra;
+      }
+    }
+
+    // Interior de las orejas
+    const interior = c.color === 'rosa' ? '#FFFFFF' : ROSA_DETALLE;
+    orejas.forEach(([x]) => {
+      const [X] = pt(x, 0);
+      for (let y = 1; y < 22; y++) {
+        const [, Y] = pt(0, y);
+        if (g[Math.round(Y)] && g[Math.round(Y)][Math.round(X)] === col) {
+          // solo en el centro de la oreja
+        }
+      }
+    });
+    if (c.orejas === 'erguidas') [9, 15].forEach(x => [2, 3].forEach(y => { const [X, Y] = pt(x, y); setPx(g, X, Y, interior); }));
+    if (c.orejas === 'caídas')   [6, 18].forEach(x => [7, 8].forEach(y => { const [X, Y] = pt(x, y); setPx(g, X, Y, interior); }));
+    if (c.orejas === 'cortas')   [9, 14].forEach(x => { const [X, Y] = pt(x, 5); setPx(g, X, Y, interior); });
+
+    // Ojos (si no hay lentes)
+    const [ex1, ey1] = pt(10, 8), [ex2, ey2] = pt(14, 8);
+    if (c.accesorio !== 'lentes') {
+      setPx(g, ex1, ey1, TINTA);
+      setPx(g, ex2, ey2, TINTA);
+    }
+
+    // Mejillas y nariz
+    const [m1x, m1y] = pt(8, 10), [m2x, m2y] = pt(16, 10), [nx, ny] = pt(12, 10);
+    setPx(g, m1x, m1y, ROSA_DETALLE);
+    setPx(g, m2x, m2y, ROSA_DETALLE);
+    setPx(g, nx, ny, TINTA);
+
+    // Accesorios
+    if (c.accesorio === 'lentes') {
+      [[ex1, ey1], [ex2, ey2]].forEach(([x, y]) => {
+        [[-1,-1],[0,-1],[1,-1],[-1,1],[0,1],[1,1],[-2,0],[2,0]].forEach(([dx, dy]) => setPx(g, x + dx, y + dy, TINTA));
+        setPx(g, x, y, TINTA);
+      });
+      setPx(g, (ex1 + ex2) / 2, ey1, TINTA);
+    }
+    if (c.accesorio === 'moño') {
+      const [cx, cy] = pt(16, 6);
+      [[0,0],[-1,0],[1,0],[0,-1],[0,1]].forEach(([dx, dy]) => setPx(g, cx + dx, cy + dy, ROSA_DETALLE));
+      setPx(g, cx + 2, cy, ROSA_DETALLE);
+      setPx(g, cx - 2, cy, ROSA_DETALLE);
+    }
+
+    return g;
+  }
+
+  function svgPixeles(g, clase = 'conejo') {
+    let rects = '';
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      if (g[y][x]) rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${g[y][x]}"/>`;
+    }
+    return `<svg viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges" class="${clase}" role="img" aria-label="Conejo">${rects}</svg>`;
+  }
+
+  function conejoSVG(c) {
+    return svgPixeles(pixelesConejo(c));
+  }
+
+  function descripcionTexto(c) {
+    return `Conejo ${c.color} de orejas ${c.orejas}, con ${c.accesorio}, tamaño ${c.tamaño} y pelo ${c.pelo}.`;
+  }
+
+  function textoCompartir(c) {
+    return `Soy un conejo ${c.color}: orejas ${c.orejas}, ${c.accesorio}, tamaño ${c.tamaño} y pelo ${c.pelo}. ¿Qué conejo serías tú? Hazlo en Conejo-encuesta.`;
+  }
+
+  /* ---------- Guardado ---------- */
+
+  function guardar(conejo) {
+    try {
+      localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(conejo));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function cargar() {
+    try {
+      const raw = localStorage.getItem(CLAVE_GUARDADO);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* ---------- Imagen para compartir ---------- */
+
+  function imagenPNG(conejo) {
+    return new Promise((resolve, reject) => {
+      const svgTexto = svgPixeles(pixelesConejo(conejo), 'x').replace('<svg ', '<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg" ');
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.fillStyle = '#eaf9ff';
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.drawImage(img, 0, 0, 512, 512);
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error('sin imagen')), 'image/png');
+      };
+      img.onerror = reject;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgTexto);
+    });
+  }
+
+  /* ===================== VISTAS ===================== */
+
+  const $ = id => document.getElementById(id);
+
+  function mostrar(vista) {
+    ['inicio', 'cuestionario', 'resultado', 'generador'].forEach(v => $(v).classList.toggle('oculto', v !== vista));
+  }
+
+  function mostrarPregunta() {
+    const p = PREGUNTAS[indice];
+    $('barra').style.width = `${(indice / PREGUNTAS.length) * 100}%`;
+    $('contador').textContent = `Pregunta ${indice + 1} de ${PREGUNTAS.length}`;
+    $('pregunta').textContent = p.texto;
+    const cont = $('opciones');
+    cont.innerHTML = '';
+    p.opciones.forEach(op => {
+      const b = document.createElement('button');
+      b.className = 'opcion';
+      b.textContent = op.label;
+      b.addEventListener('click', () => responder(p.attr, op.valor));
+      cont.appendChild(b);
+    });
+  }
+
+  function responder(attr, valor) {
+    respuestas.push({ attr, valor });
+    indice++;
+    if (indice < PREGUNTAS.length) {
+      mostrarPregunta();
+    } else {
+      $('barra').style.width = '100%';
+      terminar();
+    }
+  }
+
+  function mostrarConejo(conejo, guardadoAhora) {
+    conejoActual = conejo;
+    $('pantalla').innerHTML = conejoSVG(conejo);
+    $('nombre-conejo').textContent = `Tu conejo ${conejo.color}`;
+    $('texto-conejo').textContent = descripcionTexto(conejo);
+    $('estado').textContent = guardadoAhora ? '¡Guardado en este navegador!' : '';
+    mostrar('resultado');
+  }
+
+  function terminar() {
+    const conejo = generarConejo(respuestas);
+    const ok = guardar(conejo);
+    mostrarConejo(conejo, ok);
+    if (!ok) $('estado').textContent = 'No se pudo guardar en este navegador.';
+  }
+
+  function empezar() {
+    indice = 0;
+    respuestas = [];
+    mostrar('cuestionario');
+    mostrarPregunta();
+  }
+
+  function mensaje(texto) {
+    $('estado').textContent = texto;
+  }
+
+  /* ===================== COMPARTIR ===================== */
+
+  async function compartir() {
+    if (!conejoActual) return;
+    const texto = textoCompartir(conejoActual);
+    try {
+      const blob = await imagenPNG(conejoActual);
+      const archivo = new File([blob], 'mi-conejo.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+        await navigator.share({ files: [archivo], title: 'Conejo-encuesta', text });
+        return;
+      }
+    } catch (e) { /* cae a texto */ }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Conejo-encuesta', text });
+        return;
+      } catch (e) { return; }
+    }
+    copiar();
+  }
+
+  async function descargar() {
+    if (!conejoActual) return;
+    try {
+      const blob = await imagenPNG(conejoActual);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `conejo-${conejoActual.color}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      mensaje('Imagen descargada.');
+    } catch (e) {
+      mensaje('No se pudo generar la imagen.');
+    }
+  }
+
+  function whatsapp() {
+    if (!conejoActual) return;
+    window.open('https://wa.me/?text=' + encodeURIComponent(textoCompartir(conejoActual)), '_blank');
+  }
+
+  async function copiar() {
+    if (!conejoActual) return;
+    const texto = textoCompartir(conejoActual);
+    try {
+      await navigator.clipboard.writeText(texto);
+      mensaje('Texto copiado.');
+    } catch (e) {
+      mensaje('No se pudo copiar el texto.');
+    }
+  }
+
+  /* ===================== EVENTOS ===================== */
+
+  $('btn-empezar').addEventListener('click', empezar);
+  $('btn-repetir').addEventListener('click', empezar);
+  $('btn-inicio').addEventListener('click', () => {
+    initInicio();
+    mostrar('inicio');
+  });
+  $('btn-ver').addEventListener('click', () => {
+    const guardado = cargar();
+    if (guardado) mostrarConejo(guardado, false);
+  });
+  $('btn-compartir').addEventListener('click', compartir);
+  $('btn-descargar').addEventListener('click', descargar);
+  $('btn-whatsapp').addEventListener('click', whatsapp);
+  $('btn-copiar').addEventListener('click', copiar);
+
+  function initInicio() {
+    $('btn-ver').classList.toggle('oculto', !cargar());
+  }
+
+  /* ===================== GENERADOR LIBRE ===================== */
+
+  const ETIQUETAS = { orejas: 'Orejas', accesorio: 'Accesorio', color: 'Color', tamaño: 'Tamaño', pelo: 'Pelo' };
+
+  function construirSelectores() {
+    const cont = $('selectores');
+    cont.innerHTML = '';
+    Object.keys(ATRIBUTOS).forEach(attr => {
+      const label = document.createElement('label');
+      label.textContent = ETIQUETAS[attr];
+      const sel = document.createElement('select');
+      sel.className = 'selector';
+      sel.dataset.attr = attr;
+      const azar = document.createElement('option');
+      azar.value = '';
+      azar.textContent = 'Al azar';
+      sel.appendChild(azar);
+      ATRIBUTOS[attr].forEach(v => {
+        const op = document.createElement('option');
+        op.value = v;
+        op.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+        sel.appendChild(op);
+      });
+      label.appendChild(sel);
+      cont.appendChild(label);
+    });
+  }
+
+  function crearLibre() {
+    const base = generarConejo([]);
+    const conejo = {};
+    document.querySelectorAll('#selectores select').forEach(sel => {
+      conejo[sel.dataset.attr] = sel.value || base[sel.dataset.attr];
+    });
+    mostrarConejo(conejo, false);
+    mensaje('Conejo creado a tu gusto. No se guarda en este navegador.');
+  }
+
+  $('btn-generar').addEventListener('click', () => {
+    construirSelectores();
+    mostrar('generador');
+  });
+  $('btn-crear').addEventListener('click', crearLibre);
+  $('btn-volver-gen').addEventListener('click', () => {
+    initInicio();
+    mostrar('inicio');
+  });
+
+  $('ejemplo').innerHTML = conejoSVG(CONEJO_EJEMPLO);
+  initInicio();
+</script>
+</body>
+</html>
